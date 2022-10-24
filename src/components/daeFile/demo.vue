@@ -21,7 +21,6 @@ export default {
             renderer: null,
             container: null,
             material: null,
-
             //
             kinematics:null
         }
@@ -33,36 +32,30 @@ export default {
             this.container = document.getElementById('container');
             this.scene.add(new AxesHelper(10));
         },
-        InitColladaLoader(){
-            let dae;//定义collada的背景
-            const sc = this.scene;//画布
-            let kinematics = this.kinematics;//零件的轴
-            const loader = new ColladaLoader();
-
-            //let that = this;
-
-            loader.load('/models/daes/abb_irb52_7_120.dae',
-            function (collada) {
-                //console.log(collada);//加载的模型
-                dae = collada.scene;//collada的scene
-                sc.add(dae);
-                //console.log(dae);//加载出的模型的背景
-                dae.traverse(function (child) {
-                    if (child.isMesh) {
-                        //console.log(child);如果有子组件，展示子组件
-                        child.material.flatShading = true;
-                        child.material.color = new Three.Color(Math.random()*0xffffff);
-                        //调整零件缩放倍数dae.scale.x = dae.scale.y = dae.scale.z =10.0;
-                    }
-                })
+        onloadFunc(collada) {
+            var dae;//定义collada的背景
+            var sc = this.scene;//画布
+            var kinematics = this.kinematics;//零件的轴
+            //console.log(collada);//加载的模型
+            dae = collada.scene;//collada的scene
+            sc.add(dae);
+            //console.log(dae);//加载出的模型的背景
+            dae.traverse(function (child) {
+                if (child.isMesh) {
+                    //console.log(child);如果有子组件，展示子组件
+                    child.material.flatShading = true;
+                    child.material.color = new Three.Color(Math.random()*0xffffff);
+                }
+            })
             kinematics = collada.kinematics;
-                    console.log(kinematics);
-            });
+            console.log(kinematics);
         },
-        /**
-         *
-         *
-         InitTween(){
+        InitColladaLoader(){
+            const loader = new ColladaLoader();
+            //let that = this;
+            loader.load('/models/daes/abb_irb52_7_120.dae',this.onloadFunc());
+        },
+        InitTween(){
          // var tween;
          // var paras={};
          // const target = {};
@@ -75,7 +68,6 @@ export default {
 
           //tween = new TWEEN.Tween(paras).to(target,duration).easing(TWEEN.Easing.Quadratic.Out);//to：从起始点到最重点。easing：曲线变换机制，刚开始动画快，到最后慢。
         },
-         */
 
         InitMesh() {
 
@@ -174,7 +166,7 @@ export default {
     mounted() {
         this.InitScene();//场景
         this.InitColladaLoader();//加载dae文件
-        //this.InitTween();
+        this.InitTween();
         this.InitMesh();//网格，里面包含图形和其材质
         this.InitLight();//光源
         this.InitCamera();//相机
